@@ -14,12 +14,10 @@ API.
 
 ## Run the app
 
-    ```js
     yarn start
     Our
     yarn dev ( run the development mode )
-    ```
-
+ 
 
 # REST API
 
