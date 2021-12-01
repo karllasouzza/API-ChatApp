@@ -17,7 +17,6 @@ API.
     yarn start
     Our
     yarn dev ( run the development mode )
- 
 
 # REST API
 
@@ -38,11 +37,11 @@ API.
         "EMAIL": "karlla@karlla.com",
         "PASSWORD": "Karlla1*"
         }
+         ...
     ],
     "count": 1,
     "error": false
     }
-    ...
 ```
 
 ## Create a New User
@@ -51,11 +50,21 @@ API.
 
 `POST /users`
 
+### Request Body Example
+
+```json
+{
+  "name": "Karlla Souzza",
+  "email": "karlla@karlla.com",
+  "password": "Karlla1*"
+}
+```
+
 ### Response Example
 
 ```json
 {
-  "require": "karlla4@karlla.com",
+  "UserID": 1,
   "error": false
 }
 ```
@@ -64,7 +73,7 @@ API.
 
 ### Request
 
-`GET /users/id`
+  `GET /users/id`
 
 ### Response Example
 
@@ -129,7 +138,37 @@ API.
 
 ```json
 {
-"message": "The email require non exists",
-"error": true
+  "message": "The email require non exists",
+  "error": true
+}
+```
+
+## DELETE a specific User by ID
+
+### Request
+
+`DELETE /users/id`
+
+### Response Example
+
+```json
+{
+  "response": "The user has been deleted",
+  "error": false
+}
+```
+
+## Delete a non-existent User required by Email
+
+### Request
+
+`DELETE /users/id`
+
+### Response Example
+
+```json
+{
+  "message": "The id require non exists",
+  "error": true
 }
 ```
