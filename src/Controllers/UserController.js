@@ -5,6 +5,7 @@ const UserModel = require("../Models/UserModel");
 const UserController = (app, bd) => {
   const newUserDao = new UserDao(bd);
 
+  // GET ALL users
   app.get("/users", async (req, res) => {
     try {
       const data = await newUserDao.findAll();
@@ -12,10 +13,12 @@ const UserController = (app, bd) => {
     } catch (error) {
       res.status(400).send({
         message: error.message,
-        error: true
+        error: true,
       });
     }
   });
+
+  // Insert user
   app.post("/users", async (req, res) => {
     try {
       const body = req.body;
@@ -26,10 +29,12 @@ const UserController = (app, bd) => {
     } catch (error) {
       res.status(400).send({
         message: error.message,
-        error: true
+        error: true,
       });
     }
   });
+
+  // Get user by ID
   app.get("/users/:id", async (req, res) => {
     const id = req.params.id;
     try {
@@ -38,11 +43,24 @@ const UserController = (app, bd) => {
     } catch (error) {
       res.status(400).send({
         message: error.message,
-        error: true
+        error: true,
       });
     }
   });
-  
+
+  // GET user by email
+  app.get("/users/seach/:email", async (req, res) => {
+    const email = req.params.email;
+    try {
+      const data = await newUserDao.findByEmail(email);
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(400).json({
+        message: error.message,
+        error: true,
+      });
+    }
+  });
 };
 
 module.exports = UserController;

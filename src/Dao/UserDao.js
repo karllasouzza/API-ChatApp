@@ -37,7 +37,7 @@ class UserDao {
             resolve({
               email: data.email,
               error: false,
-            }); 
+            });
           }
         }
       );
@@ -50,6 +50,11 @@ class UserDao {
         if (error) {
           reject({
             message: error.message,
+            error: true,
+          });
+        } else if (rows.length === 0) {
+          reject({
+            message: "The id require non exists",
             error: true,
           });
         } else {
@@ -68,6 +73,11 @@ class UserDao {
         if (error) {
           reject({
             message: error.message,
+            error: true,
+          });
+        } else if (rows.length === 0) {
+          reject({
+            message: "The email require non exists",
             error: true,
           });
         } else {

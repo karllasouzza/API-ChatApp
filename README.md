@@ -20,7 +20,6 @@ API.
     yarn dev ( run the development mode )
     ```
 
-
 # REST API
 
 ## Get All Users
@@ -62,7 +61,7 @@ API.
 }
 ```
 
-## Get a specific User
+## Get a specific User by ID
 
 ### Request
 
@@ -84,17 +83,54 @@ API.
 }
 ```
 
-## Get a non-existent User
+## Get a non-existent User required by ID
 
 ### Request
 
 `GET /users/id`
 
-### Response
+### Response Example
 
 ```json
+{
+  "message": "The id require non exists",
+  "error": true
+}
+```
+
+## Get a specific User by Email
+
+### Request
+
+`GET /users/seach/email`
+
+### Response Example
+
+```json
+{
+  "users": [
     {
-    "response": [],
-    "error": false
+      "ID": 1,
+      "NAME": "Karlla Souzza",
+      "EMAIL": "karlla4@karlla.com",
+      "PASSWORD": "Karlla1*"
     }
+  ],
+  "error": false
+}
+```
+
+## Get a non-existent User required by Email
+
+### Request
+
+`GET /users/seach/email`
+
+### Response Example
+
+```json
+{
+"message": "The email require non exists",
+"error": true
+}
 ```
