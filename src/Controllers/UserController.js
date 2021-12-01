@@ -25,7 +25,11 @@ const UserController = (app, bd) => {
       const newUserModel = new UserModel(body);
 
       const data = await newUserDao.insert(newUserModel);
-      res.status(201).json(data);
+      const UserId = await newUserDao.findByEmail(data.email);
+      res.status(201).json({
+        UserID: UserId.users[0].ID,
+        error: false,
+      });
     } catch (error) {
       res.status(400).send({
         message: error.message,
@@ -53,6 +57,19 @@ const UserController = (app, bd) => {
     const email = req.params.email;
     try {
       const data = await newUserDao.findByEmail(email);
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(400).json({
+        message: error.message,
+        error: true,
+      });
+    }
+  });
+
+  app.delete("/users/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
+      const data = await newUserDao.deleteById(id);
       res.status(200).json(data);
     } catch (error) {
       res.status(400).json({

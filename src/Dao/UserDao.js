@@ -89,6 +89,34 @@ class UserDao {
       });
     });
   }
+  async deleteById(id) {
+    try {
+      const user = await this.findById(id);
+      if (user.response.length) {
+        const DELETED_USER = `DELETE FROM USERS
+                              WHERE ID = ?`;
+        return new Promise((resolve, reject) => {
+          this.bd.run(DELETED_USER, id, (error) => {
+            if (error) {
+              reject({
+                message: error.message,
+                error: true,
+              });
+            } else {
+              resolve({
+                response: "The user has been deleted",
+                error: false,
+              });
+            }
+          });
+        });
+      } else {
+        throw new Error("The user require non exists");
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 module.exports = UserDao;
