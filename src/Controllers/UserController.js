@@ -11,7 +11,7 @@ const UserController = (app, bd) => {
       const data = await newUserDao.findAll();
       res.status(200).json(data);
     } catch (error) {
-      res.status(400).send({
+      res.status(200).send({
         message: error.message,
         error: true,
       });
@@ -31,7 +31,7 @@ const UserController = (app, bd) => {
         error: false,
       });
     } catch (error) {
-      res.status(400).send({
+      res.status(200).send({
         message: error.message,
         error: true,
       });
@@ -51,6 +51,20 @@ const UserController = (app, bd) => {
       });
     }
   });
+
+  app.post("/login/users/", async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    try {
+      const data = await newUserDao.findByEmailAndPassword(email, password);
+      res.json(data);
+    } catch (error) {
+      res.json({
+        message: error.message,
+        error: true,
+      });
+    }
+  })
 
   // GET user by email
   app.get("/users/seach/:email", async (req, res) => {

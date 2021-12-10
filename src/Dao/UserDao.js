@@ -89,6 +89,29 @@ class UserDao {
       });
     });
   }
+  findByEmailAndPassword(email, password) {
+    return new Promise((resolve, reject) => {
+      const SELECT_BY_EMAIL = "SELECT * FROM 'USERS' WHERE EMAIL = ? AND PASSWORD = ?";
+      this.bd.all(SELECT_BY_EMAIL, [email, password], (error, rows) => {
+        if (error) {
+          reject({
+            message: error.message,
+            error: true,
+          });
+        } else if (rows.length === 0) {
+          reject({
+            message: "The email require non exists",
+            error: true,
+          });
+        } else {
+          resolve({
+            response: rows,
+            error: false,
+          });
+        }
+      });
+    });
+  }
   async deleteById(id) {
     try {
       const user = await this.findById(id);
