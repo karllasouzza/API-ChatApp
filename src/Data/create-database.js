@@ -1,8 +1,16 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const caminhoArq = path.resolve(__dirname,'database.db')
+const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
+const caminhoArq = path.resolve(__dirname, "database.db");
 
 const db = new sqlite3.Database(caminhoArq);
+
+const pragma = `PRAGMA foreign_keys = ON`;
+
+function enableForeignKey() {
+  db.run(pragma, (error) => {
+    if (error) console.log("Error in process of creation exec 'pragma'");
+  });
+}
 
 //==== Usuários
 const USERS_SCHEMA = `
@@ -13,32 +21,30 @@ CREATE TABLE IF NOT EXISTS "USERS" (
     "PASSWORD" varchar(100)
     );`;
 
-
 function CreateTableUser() {
-    db.run(USERS_SCHEMA, (error)=> {
-        if(error) console.log("Error in process of creation table 'USERS'");
-
-    });
+  db.run(USERS_SCHEMA, (error) => {
+    if (error) console.log("Error in process of creation table 'USERS'");
+  });
 }
-
 
 //====  Message
 const MESSAGE_SCHEMA = `
 CREATE TABLE IF NOT EXISTS "MESSAGE" (
     ID INTEGER PRIMARY KEY AUTOINCREMENT, 
     CONTENT TEXT,
-    DATACREATE VARCHAR(32),
-    ID_USERS INTEGER REFERENCES USERS(ID)
+    DATACREATE DATATIME,
+    ID_USERS INTEGER,
+    FOREIGN KEY(ID_USERS) REFERENCES USERS(ID)
 );`;
 
-
 function CreateTableMessage() {
-    db.run(MESSAGE_SCHEMA, (error)=> {
-        if(error) console.log("Error in process of creation table 'MESSAGE'");
-    });
+  db.run(MESSAGE_SCHEMA, (error) => {
+    if (error) console.log("Error in process of creation table 'MESSAGE'");
+  });
 }
 
-db.serialize( ()=> {
-    CreateTableUser();
-    CreateTableMessage();
+db.serialize(() => {
+  enableForeignKey();
+  CreateTableUser();
+  CreateTableMessage();
 });
