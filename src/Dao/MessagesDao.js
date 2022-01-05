@@ -1,10 +1,10 @@
-class UserDao {
+class MessagesDao {
   constructor(bd) {
     this.bd = bd;
   }
 
   findAll() {
-    const SELECT_ALL = "SELECT * FROM 'USERS'";
+    const SELECT_ALL = "SELECT * FROM 'MESSAGE'";
     return new Promise((resolve, reject) => {
       this.bd.all(SELECT_ALL, (error, rows) => {
         if (error) {
@@ -13,7 +13,7 @@ class UserDao {
           });
         } else {
           resolve({
-            users: rows,
+            content: rows,
             count: rows.length,
           });
         }
@@ -23,8 +23,8 @@ class UserDao {
   insert(data) {
     return new Promise((resolve, reject) => {
       this.bd.run(
-        `INSERT INTO USERS (ID, NAME, EMAIL,PASSWORD) VALUES (?,?,?,?)`,
-        [data.id, data.name, data.email, data.password],
+        `INSERT INTO MESSAGE (CONTENT, DATACREATE, ID_USERS) VALUES(?,?,?)`,
+        [data.content, data.dataCreated, data.user_id],
         (error) => {
           if (error) {
             reject({
@@ -39,51 +39,10 @@ class UserDao {
       );
     });
   }
-  findById(id) {
-    return new Promise((resolve, reject) => {
-      const SELECT_BY_ID = "SELECT NAME, EMAIL FROM 'USERS' WHERE ID = ?";
-      this.bd.all(SELECT_BY_ID, id, (error, rows) => {
-        if (error) {
-          reject({
-            message: error.message,
-          });
-        } else if (rows.length === 0) {
-          reject({
-            message: "The id require non exists",
-          });
-        } else {
-          resolve({
-            response: rows,
-          });
-        }
-      });
-    });
-  }
   findByEmail(email) {
     return new Promise((resolve, reject) => {
       const SELECT_BY_EMAIL = "SELECT * FROM 'USERS' WHERE EMAIL = ?";
       this.bd.all(SELECT_BY_EMAIL, email, (error, rows) => {
-        if (error) {
-          reject({
-            message: error.message,
-          });
-        } else if (rows.length === 0) {
-          reject({
-            message: "The email require non exists",
-          });
-        } else {
-          resolve({
-            users: rows,
-          });
-        }
-      });
-    });
-  }
-  findByEmailAndPassword(email, password) {
-    return new Promise((resolve, reject) => {
-      const SELECT_BY_EMAIL =
-        "SELECT * FROM 'USERS' WHERE EMAIL = ? AND PASSWORD = ?";
-      this.bd.all(SELECT_BY_EMAIL, [email, password], (error, rows) => {
         if (error) {
           reject({
             message: error.message,
@@ -102,19 +61,19 @@ class UserDao {
   }
   async deleteById(id) {
     try {
-      const user = await this.findById(id);
-      if (user.response.length) {
-        const DELETED_USER = `DELETE FROM USERS
+      const message = await this.findById(id);
+      if (message.response.length) {
+        const DELETED_message = `DELETE FROM MESSAGE
                               WHERE ID = ?`;
         return new Promise((resolve, reject) => {
-          this.bd.run(DELETED_USER, id, (error) => {
+          this.bd.run(DELETED_message, id, (error) => {
             if (error) {
               reject({
                 message: error.message,
               });
             } else {
               resolve({
-                response: "The user has been deleted",
+                response: "The message has been deleted",
               });
             }
           });
@@ -128,4 +87,4 @@ class UserDao {
   }
 }
 
-module.exports = UserDao;
+module.exports = MessagesDao;

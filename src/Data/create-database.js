@@ -15,7 +15,7 @@ function enableForeignKey() {
 //==== Usuários
 const USERS_SCHEMA = `
 CREATE TABLE IF NOT EXISTS "USERS" (
-    "ID" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "ID" VARCHAR(50)  PRIMARY KEY,
     "NAME" varchar(80),
     "EMAIL" varchar(80) UNIQUE,
     "PASSWORD" varchar(100)
@@ -30,7 +30,7 @@ function CreateTableUser() {
 //====  Message
 const MESSAGE_SCHEMA = `
 CREATE TABLE IF NOT EXISTS "MESSAGE" (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT, 
+    ID VARCHAR(50) PRIMARY KEY, 
     CONTENT TEXT,
     DATACREATE DATATIME,
     ID_USERS INTEGER,

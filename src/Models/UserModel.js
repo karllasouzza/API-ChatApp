@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require("uuid");
+const sha256 = require("js-sha256");
 class UserModel {
   static validName(name) {
     const regex = /^([a-z]{2,}([\s-][a-z]{2,})+)$/gi;
@@ -24,10 +26,12 @@ class UserModel {
     if (!regex.test(password)) {
       throw new Error("Invalid a format password: " + password);
     } else {
-      return password;
+      return sha256(password);
     }
   }
+
   constructor(body) {
+    this.id = uuidv4();
     (this.name = UserModel.validName(body.name)),
       (this.email = UserModel.validEmail(body.email)),
       (this.password = UserModel.validPassword(body.password));
