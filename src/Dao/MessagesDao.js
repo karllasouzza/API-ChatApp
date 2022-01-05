@@ -13,7 +13,7 @@ class MessagesDao {
           });
         } else {
           resolve({
-            content: rows,
+            response: rows,
             count: rows.length,
           });
         }

@@ -13,7 +13,7 @@ class UserDao {
           });
         } else {
           resolve({
-            users: rows,
+            response: rows,
             count: rows.length,
           });
         }
@@ -73,7 +73,7 @@ class UserDao {
           });
         } else {
           resolve({
-            users: rows,
+            response: rows,
           });
         }
       });
