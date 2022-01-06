@@ -1,3 +1,4 @@
+const sha256 = require("js-sha256");
 class UserDao {
   constructor(bd) {
     this.bd = bd;
@@ -83,7 +84,7 @@ class UserDao {
     return new Promise((resolve, reject) => {
       const SELECT_BY_EMAIL =
         "SELECT * FROM 'USERS' WHERE EMAIL = ? AND PASSWORD = ?";
-      this.bd.all(SELECT_BY_EMAIL, [email, password], (error, rows) => {
+      this.bd.all(SELECT_BY_EMAIL, [email, sha256(password)], (error, rows) => {
         if (error) {
           reject({
             message: error.message,

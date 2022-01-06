@@ -23,8 +23,8 @@ class MessagesDao {
   insert(data) {
     return new Promise((resolve, reject) => {
       this.bd.run(
-        `INSERT INTO MESSAGE (CONTENT, DATACREATE, ID_USERS) VALUES(?,?,?)`,
-        [data.content, data.dataCreated, data.user_id],
+        `INSERT INTO MESSAGE (ID, CONTENT, DATACREATE, ID_USERS) VALUES(?,?,?,?)`,
+        [data.id, data.content, data.dataCreated, data.user_id],
         (error) => {
           if (error) {
             reject({
