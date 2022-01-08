@@ -20,6 +20,30 @@ class MessagesDao {
       });
     });
   }
+
+  findPaginationMessages(PerPage, Page) {
+    const SELECT_ALL =
+      "SELECT * FROM 'MESSAGE' ORDER BY DATACREATE ASC LIMIT ?,? ";
+    return new Promise((resolve, reject) => {
+      this.bd.all(
+        SELECT_ALL,
+        [Page === 1 ? 0 : Page * PerPage, PerPage],
+        (error, rows) => {
+          if (error) {
+            reject({
+              message: error.message,
+            });
+          } else {
+            resolve({
+              response: rows,
+              count: rows.length,
+            });
+          }
+        }
+      );
+    });
+  }
+
   insert(data) {
     return new Promise((resolve, reject) => {
       this.bd.run(
@@ -39,6 +63,7 @@ class MessagesDao {
       );
     });
   }
+
   findByEmail(email) {
     return new Promise((resolve, reject) => {
       const SELECT_BY_EMAIL = "SELECT * FROM 'USERS' WHERE EMAIL = ?";
@@ -59,6 +84,7 @@ class MessagesDao {
       });
     });
   }
+
   async deleteById(id) {
     try {
       const message = await this.findById(id);

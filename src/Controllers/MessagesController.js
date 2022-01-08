@@ -16,6 +16,23 @@ const MessagesController = (app, bd, socket) => {
     }
   });
 
+  app.get("/messages/scroll/:PP,:P", async (req, res) => {
+    const Page = Number(req.params.P);
+    console.log(Number(req.params.P));
+    const PerPage = Number(req.params.PP);
+    console.log(Number(req.params.PP));
+
+    try {
+      const data = await newMessageDao.findPaginationMessages(PerPage, Page);
+      res.status(200).json({ data, error: false });
+    } catch (error) {
+      res.status(400).send({
+        message: error.message,
+        error: true,
+      });
+    }
+  });
+
   // Insert Message
   app.post("/messages", async (req, res) => {
     try {
