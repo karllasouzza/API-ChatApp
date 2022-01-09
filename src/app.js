@@ -6,7 +6,9 @@ const bd = require("./Data/sqlite-db");
 const http = require("http");
 const io = require("socket.io");
 
-const corsOptions = { origin: "http://localhost:3000" };
+const corsOptions = {
+  origin: ["http://localhost:3000", "https://gallant-cray-57a8d4.netlify.app"],
+};
 app.use(cors(corsOptions));
 
 // Middlewares

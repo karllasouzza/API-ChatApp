@@ -23,7 +23,7 @@ class MessagesDao {
 
   findPaginationMessages(PerPage, Page) {
     const SELECT_ALL =
-      "SELECT * FROM 'MESSAGE' ORDER BY DATACREATE ASC LIMIT ?,? ";
+      "SELECT * FROM 'MESSAGE' ORDER BY DATACREATE DESC LIMIT ?,? ";
     return new Promise((resolve, reject) => {
       this.bd.all(
         SELECT_ALL,
