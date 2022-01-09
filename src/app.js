@@ -20,9 +20,7 @@ app.use((req, res, next) => {
 
 const server = http.createServer(app);
 const socket = new io.Server(server, { cors: corsOptions });
-socket.on("connection", () => {
-  console.log("Connected to socket");
-});
+socket.on("connection", () => {});
 
 //==== Routers
 const user = require("./Controllers/UserController");

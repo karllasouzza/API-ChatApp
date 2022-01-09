@@ -18,9 +18,7 @@ const MessagesController = (app, bd, socket) => {
 
   app.get("/messages/scroll/:PP,:P", async (req, res) => {
     const Page = Number(req.params.P);
-    console.log(Number(req.params.P));
     const PerPage = Number(req.params.PP);
-    console.log(Number(req.params.PP));
 
     try {
       const data = await newMessageDao.findPaginationMessages(PerPage, Page);
