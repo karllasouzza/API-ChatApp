@@ -31,10 +31,10 @@ class UserModel {
   }
 
   constructor(body) {
-    this.id = uuidv4();
-    (this.name = UserModel.validName(body.name)),
-      (this.email = UserModel.validEmail(body.email)),
-      (this.password = UserModel.validPassword(body.password));
+    this.ID = uuidv4();
+    (this.NAME = UserModel.validName(body.name)),
+      (this.EMAIL = UserModel.validEmail(body.email)),
+      (this.PASSWORD = UserModel.validPassword(body.password));
   }
 }
 module.exports = UserModel;

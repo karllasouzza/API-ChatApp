@@ -25,7 +25,7 @@ class UserDao {
     return new Promise((resolve, reject) => {
       this.bd.run(
         `INSERT INTO USERS (ID, NAME, EMAIL,PASSWORD) VALUES (?,?,?,?)`,
-        [data.id, data.name, data.email, data.password],
+        [data.ID, data.NAME, data.EMAIL, data.PASSWORD],
         (error) => {
           if (error) {
             reject({
@@ -33,7 +33,7 @@ class UserDao {
             });
           } else {
             resolve({
-              response: data,
+              response: [data],
             });
           }
         }
