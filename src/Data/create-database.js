@@ -12,6 +12,7 @@ function enableForeignKey() {
   });
 }
 
+
 //==== Usuários
 const USERS_SCHEMA = `
 CREATE TABLE IF NOT EXISTS "USERS" (

@@ -7,7 +7,7 @@ const http = require("http");
 const io = require("socket.io");
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://gallant-cray-57a8d4.netlify.app"],
+  origin: ["http://localhost:3000", "https://silly-ritchie-d3d880.netlify.app"],
 };
 app.use(cors(corsOptions));
 
@@ -20,7 +20,6 @@ app.use((req, res, next) => {
 
 const server = http.createServer(app);
 const socket = new io.Server(server, { cors: corsOptions });
-socket.on("connection", () => {});
 
 //==== Routers
 const user = require("./Controllers/UserController");
