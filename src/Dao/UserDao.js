@@ -1,123 +1,208 @@
-const sha256 = require("js-sha256");
 class UserDao {
   constructor(bd) {
-    this.bd = bd;
+    this.mysql = bd;
   }
 
   findAll() {
-    const SELECT_ALL = "SELECT * FROM 'USERS'";
     return new Promise((resolve, reject) => {
-      this.bd.all(SELECT_ALL, (error, rows) => {
+      this.mysql.getConnection((error, conn) => {
         if (error) {
-          reject({
-            message: error.message,
-          });
-        } else {
-          resolve({
-            response: rows,
-            count: rows.length,
-          });
+          return reject({ error: error });
         }
+        conn.query("SELECT * FROM users;", (error, result, fields) => {
+          if (error) {
+            return reject({ error: error });
+          }
+          return resolve({
+            response: result,
+            count: result.length,
+          });
+        });
       });
     });
   }
+
   insert(data) {
     return new Promise((resolve, reject) => {
-      this.bd.run(
-        `INSERT INTO USERS (ID, NAME, EMAIL,PASSWORD) VALUES (?,?,?,?)`,
-        [data.ID, data.NAME, data.EMAIL, data.PASSWORD],
-        (error) => {
-          if (error) {
-            reject({
-              message: error.message,
-            });
-          } else {
+      this.mysql.getConnection((error, conn) => {
+        if (error) {
+          return reject({ error: error });
+        }
+        conn.query(
+          "INSERT INTO users (_id, name, email, password) VALUES (?,?,?,?)",
+          [data.ID, data.NAME, data.EMAIL, data.PASSWORD],
+          (error, result, field) => {
+            conn.release();
+            if (error) {
+              return reject({
+                error: error,
+                response: null,
+              });
+            }
             resolve({
-              response: [data],
+              id: data.ID,
             });
           }
-        }
-      );
+        );
+      });
     });
   }
+
   findById(id) {
     return new Promise((resolve, reject) => {
-      const SELECT_BY_ID = "SELECT NAME, EMAIL FROM 'USERS' WHERE ID = ?";
-      this.bd.all(SELECT_BY_ID, id, (error, rows) => {
+      this.mysql.getConnection((error, conn) => {
         if (error) {
-          reject({
-            message: error.message,
-          });
-        } else if (rows.length === 0) {
-          reject({
-            message: "The id require non exists",
-          });
-        } else {
-          resolve({
-            response: rows,
-          });
+          return reject({ error: error });
         }
+        conn.query(
+          "SELECT name, email, thumbnail FROM users WHERE _id = ?",
+          id,
+          (error, result, fields) => {
+            if (error || result.length === 0) {
+              return reject({ message: "The id require non exists" });
+            }
+            return resolve({
+              response: result,
+            });
+          }
+        );
       });
     });
   }
+
+  findByIdFullRows(id) {
+    return new Promise((resolve, reject) => {
+      this.mysql.getConnection((error, conn) => {
+        if (error) {
+          return reject({ error: error });
+        }
+        conn.query(
+          "SELECT * FROM users WHERE _id = ?",
+          id,
+          (error, result, fields) => {
+            if (error) {
+              return reject({ error: error });
+            }
+            return resolve({
+              response: result,
+            });
+          }
+        );
+      });
+    });
+  }
+
   findByEmail(email) {
     return new Promise((resolve, reject) => {
-      const SELECT_BY_EMAIL = "SELECT * FROM 'USERS' WHERE EMAIL = ?";
-      this.bd.all(SELECT_BY_EMAIL, email, (error, rows) => {
+      this.mysql.getConnection((error, conn) => {
         if (error) {
-          reject({
-            message: error.message,
-          });
-        } else if (rows.length === 0) {
-          reject({
-            message: "The email require non exists",
-          });
-        } else {
-          resolve({
-            response: rows,
-          });
+          return reject({ error: error });
         }
+        conn.query(
+          "SELECT name, email FROM users WHERE email = ?",
+          email,
+          (error, result, fields) => {
+            if (error || result.length === 0) {
+              return reject({ message: "The email require non exists" });
+            }
+            return resolve({
+              response: result,
+            });
+          }
+        );
       });
     });
   }
+
   findByEmailAndPassword(email, password) {
     return new Promise((resolve, reject) => {
-      const SELECT_BY_EMAIL =
-        "SELECT * FROM 'USERS' WHERE EMAIL = ? AND PASSWORD = ?";
-      this.bd.all(SELECT_BY_EMAIL, [email, sha256(password)], (error, rows) => {
+      this.mysql.getConnection((error, conn) => {
         if (error) {
-          reject({
-            message: error.message,
-          });
-        } else if (rows.length === 0) {
-          reject({
-            message: "The email require non exists",
-          });
-        } else {
-          resolve({
-            response: rows,
-          });
+          return reject({ error: error });
         }
+        conn.query(
+          "SELECT _id FROM users WHERE email = ? AND password = ?",
+          [email, password],
+          (error, result, fields) => {
+            if (error || result.length === 0) {
+              return reject({ error: "Error logging in" });
+            }
+            return resolve({
+              response: result[0],
+            });
+          }
+        );
       });
     });
   }
+
+  updateByID(id, data) {
+    return new Promise((resolve, reject) => {
+      this.mysql.getConnection((error, conn) => {
+        if (error) {
+          return reject({ error: error });
+        }
+        conn.query(
+          `UPDATE users SET name = ?, email = ?, password =?,
+          thumbnail = ?, bio = ? WHERE _id = ?`,
+          [data.name, data.email, data.password, data.thumbnail, data.bio, id],
+          (error, result, fields) => {
+            if (error) {
+              return reject({ message: error });
+            }
+            return resolve({
+              response: result,
+            });
+          }
+        );
+      });
+    });
+  }
+
+  addProfileImg(id, imgBin) {
+    return new Promise((resolve, reject) => {
+      this.mysql.getConnection((error, conn) => {
+        if (error) {
+          return reject({ error: error });
+        }
+        conn.query(
+          "UPDATE users SET thumbnail = ? WHERE _id = ?",
+          [imgBin, id],
+          (error, result, fields) => {
+            if (error) {
+              return reject({ message: error });
+            }
+            return resolve({
+              response: "Image loaded successfully",
+            });
+          }
+        );
+      });
+    });
+  }
+
   async deleteById(id) {
     try {
       const user = await this.findById(id);
-      if (user.response.length) {
-        const DELETED_USER = `DELETE FROM USERS
-                              WHERE ID = ?`;
+
+      if (!user.error) {
         return new Promise((resolve, reject) => {
-          this.bd.run(DELETED_USER, id, (error) => {
+          this.mysql.getConnection((error, conn) => {
             if (error) {
-              reject({
-                message: error.message,
-              });
-            } else {
-              resolve({
-                response: "The user has been deleted",
-              });
+              return reject({ message: "Invalid ID" });
             }
+            conn.query(
+              "DELETE FROM users WHERE _id = ?",
+              id,
+              (error, result, fields) => {
+                if (error) {
+                  return reject({ message: error });
+                }
+                return resolve({
+                  response: "User deleted successfully",
+                });
+              }
+            );
           });
         });
       } else {

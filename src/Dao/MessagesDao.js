@@ -1,115 +1,127 @@
 class MessagesDao {
   constructor(bd) {
-    this.bd = bd;
+    this.mysql = bd;
   }
 
-  findAll() {
-    const SELECT_ALL = "SELECT * FROM 'MESSAGE'";
+  findPaginationMessages(chatId, PerPage, Page) {
     return new Promise((resolve, reject) => {
-      this.bd.all(SELECT_ALL, (error, rows) => {
+      this.mysql.getConnection((error, conn) => {
         if (error) {
-          reject({
-            message: error.message,
-          });
-        } else {
-          resolve({
-            response: rows,
-            count: rows.length,
-          });
+          return reject({ error: error });
         }
-      });
-    });
-  }
-
-  findPaginationMessages(PerPage, Page) {
-    const SELECT_ALL =
-      "SELECT * FROM 'MESSAGE' ORDER BY DATACREATE DESC LIMIT ?,? ";
-    return new Promise((resolve, reject) => {
-      this.bd.all(
-        SELECT_ALL,
-        [Page === 1 ? 0 : Page * PerPage, PerPage],
-        (error, rows) => {
-          if (error) {
-            reject({
-              message: error.message,
-            });
-          } else {
-            resolve({
-              response: rows,
-              count: rows.length,
+        conn.query(
+          "SELECT * FROM messages WHERE chat_id = ? ORDER BY data_create DESC LIMIT ?,? ",
+          [chatId, Page === 1 ? 0 : Page * PerPage, PerPage],
+          (error, result, fields) => {
+            if (error) {
+              return reject({ error: error });
+            }
+            return resolve({
+              response: result,
+              count: result.length,
             });
           }
-        }
-      );
+        );
+      });
     });
   }
 
   insert(data) {
     return new Promise((resolve, reject) => {
-      this.bd.run(
-        `INSERT INTO MESSAGE (ID, CONTENT, DATACREATE, ID_USERS) VALUES(?,?,?,?)`,
-        [data.id, data.content, data.dataCreated, data.user_id],
-        (error) => {
-          if (error) {
-            reject({
-              message: error.message,
-            });
-          } else {
-            resolve({
+      this.mysql.getConnection((error, conn) => {
+        if (error) {
+          return reject({ error: error });
+        }
+        conn.query(
+          `INSERT INTO messages (_id, content, data_create, chat_id, status,
+          user_from_id, user_to_id) VALUES(?,?,?,?,?,?,?)`,
+          [
+            data.id,
+            data.content,
+            data.dataCreated,
+            data.chatId,
+            data.status,
+            data.userFrom,
+            data.userTo,
+          ],
+          (error, result, fields) => {
+            if (error) {
+              return reject({ error: error });
+            }
+            return resolve({
               response: data,
             });
           }
-        }
-      );
-    });
-  }
-
-  findByEmail(email) {
-    return new Promise((resolve, reject) => {
-      const SELECT_BY_EMAIL = "SELECT * FROM 'USERS' WHERE EMAIL = ?";
-      this.bd.all(SELECT_BY_EMAIL, email, (error, rows) => {
-        if (error) {
-          reject({
-            message: error.message,
-          });
-        } else if (rows.length === 0) {
-          reject({
-            message: "The email require non exists",
-          });
-        } else {
-          resolve({
-            response: rows,
-          });
-        }
+        );
       });
     });
   }
 
-  async deleteById(id) {
-    try {
-      const message = await this.findById(id);
-      if (message.response.length) {
-        const DELETED_message = `DELETE FROM MESSAGE
-                              WHERE ID = ?`;
-        return new Promise((resolve, reject) => {
-          this.bd.run(DELETED_message, id, (error) => {
+  updateByID(data) {
+    console.log(data);
+    return new Promise((resolve, reject) => {
+      this.mysql.getConnection((error, conn) => {
+        if (error) {
+          return reject({ error: error });
+        }
+        conn.query(
+          `UPDATE messages SET status = ? WHERE _id = ?`,
+          [data.status, data.id],
+          (error, result, fields) => {
             if (error) {
-              reject({
-                message: error.message,
-              });
-            } else {
-              resolve({
-                response: "The message has been deleted",
-              });
+              return reject({ message: error });
             }
-          });
-        });
-      } else {
-        throw new Error("The user require non exists");
-      }
-    } catch (error) {
-      throw new Error(error.message);
-    }
+            return resolve({
+              response: `Message Status Changed To ${data.status}`,
+            });
+          }
+        );
+      });
+    });
+  }
+
+  deleteById(chatId, id) {
+    return new Promise((resolve, reject) => {
+      this.mysql.getConnection((error, conn) => {
+        if (error) {
+          return reject({ error: error });
+        }
+        conn.query(
+          "DELETE FROM messages WHERE _id = ? AND user_from_id = ?",
+          [chatId, id],
+          (error, result, fields) => {
+            if (error) {
+              return reject({ message: error });
+            }
+            return resolve({
+              response: "Message deleted successfully",
+            });
+          }
+        );
+      });
+    });
+  }
+
+  DeleteAllMessagesById(id) {
+    return new Promise((resolve, reject) => {
+      this.mysql.getConnection((error, conn) => {
+        if (error) {
+          return reject({ error: error });
+        }
+        conn.query(
+          "Delete FROM messages WHERE user_from_id = ? OR user_to_id = ?",
+          [id, id],
+          (error, result, fields) => {
+            if (error) {
+              return reject({ error: error });
+            }
+            return resolve({
+              response: "successfully deleted messages",
+            });
+          }
+        );
+      });
+    });
   }
 }
 
